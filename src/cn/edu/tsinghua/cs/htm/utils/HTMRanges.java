@@ -108,8 +108,8 @@ public class HTMRanges {
 		} else if (level > thatLevel) {
 			Pair<HTMid, HTMid> thatPair = htmId.extend(level);
 			for (Pair<HTMid, HTMid> pair : pairList) {
-				long lb = pair.a.extend(thatLevel).a.getId();
-				long hb = pair.b.extend(thatLevel).b.getId();
+				long lb = pair.a.getId();
+				long hb = pair.b.getId();
 				long thatLb = thatPair.a.getId();
 				long thatHb = thatPair.b.getId();
 				if (lb <= thatLb && thatHb <= hb) {
@@ -119,6 +119,35 @@ public class HTMRanges {
 		}
 		return false;
 	}
+
+	public boolean overlaps(HTMid htmId) {
+        int thatLevel = htmId.getLevel();
+        long hid = htmId.getId();
+        if (level <= thatLevel) {
+            for (Pair<HTMid, HTMid> pair : pairList) {
+                long lb = pair.a.extend(thatLevel).a.getId();
+                long hb = pair.b.extend(thatLevel).b.getId();
+                if (lb <= hid && hid <= hb) {
+                    return true;
+                }
+            }
+        } else if (level > thatLevel){
+            Pair<HTMid, HTMid> thatPair = htmId.extend(level);
+            for (Pair<HTMid, HTMid> pair : pairList) {
+                long lb = pair.a.getId();
+                long hb = pair.b.getId();
+                long thatLb = thatPair.a.getId();
+                long thatHb = thatPair.b.getId();
+                if (thatLb >= lb && thatLb <= hb ||
+                        thatHb >= lb && thatHb <= hb ||
+                        lb >= thatLb && lb <= thatHb ||
+                        hb >= thatLb && hb <= thatHb) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 	
 	/**
 	 * Sort the pairs under these rules:
